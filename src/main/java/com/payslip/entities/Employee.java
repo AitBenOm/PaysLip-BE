@@ -1,12 +1,22 @@
 package com.payslip.entities;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
+@Entity
 public class Employee {
+    @Id
+    @GeneratedValue
     private int matricule;
     private String nom;
     private String prenom;
+    @Temporal(TemporalType.DATE)
     private Date date_de_naissance;
+    @Temporal(TemporalType.DATE)
     private Date date_emb;
     private String fonction;
     private String adresse;
@@ -18,6 +28,9 @@ public class Employee {
     private String situationFamiliale;
     private int nbEnfant;
     private  float salaireDeBase;
+
+    @OneToMany(mappedBy="employee",cascade =CascadeType.ALL, fetch=FetchType.EAGER)
+    private List<PaysLip> paysLip;
 
     public Employee(String nom, String prenom, Date date_de_naissance, Date date_emb, String fonction, String adresse, String telephone, String email, String numCNSS, String numCin, String sex, String situationFamiliale, int nbEnfant, float salaireDeBase) {
         this.nom = nom;

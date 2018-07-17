@@ -1,6 +1,13 @@
 package com.payslip.entities;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
+@Entity
 public class Service {
+    @Id
+    @GeneratedValue
     private int idService;
     private String  description;
 

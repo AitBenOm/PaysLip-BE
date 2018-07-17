@@ -1,21 +1,36 @@
 package com.payslip.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
-
-public class PyasLip {
+@Entity
+public class PaysLip {
+    @Id
+    @GeneratedValue
     public int idPyasLip;
+
+
+    @ManyToOne(fetch = FetchType.EAGER)
     public Employee employee;
+
+    @Temporal(TemporalType.DATE)
     public Date[] period;
+
+    @JsonIgnore
+    @OneToMany(mappedBy="paysLip",cascade =CascadeType.ALL, fetch=FetchType.EAGER)
     public List<Rubric> rubrics;
 
-    public PyasLip(Employee employee, Date[] period, List<Rubric> rubrics) {
+    public PaysLip(Employee employee, Date[] period, List<Rubric> rubrics) {
         this.employee = employee;
         this.period = period;
         this.rubrics = rubrics;
     }
 
-    public PyasLip() {
+    public PaysLip() {
     }
 
     public int getIdPyasLip() {

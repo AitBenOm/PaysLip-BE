@@ -1,6 +1,13 @@
 package com.payslip.entities;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
+@Entity
 public class Fonction {
+    @Id
+    @GeneratedValue
     private  int  fonction_Id;
    private String  description;
 

@@ -1,21 +1,26 @@
 package com.payslip.entities;
 
+import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
 
-public class student {
+@Entity
+public class Student {
 
+    @Id
+    @GeneratedValue
     public int  numEtudiant;
     public String nom;
     public String prenom;
+    @Temporal(TemporalType.DATE)
     public Date date_de_naissance;
     public String adresse;
-    public List<String>contacts;
+    public String contacts;
     public String email;
     public String sex;
     public String level;
 
-    public student(String nom, String prenom, Date date_de_naissance, String adresse, List<String> contacts, String email, String sex, String level) {
+    public Student(String nom, String prenom, Date date_de_naissance, String adresse, String contacts, String email, String sex, String level) {
         this.nom = nom;
         this.prenom = prenom;
         this.date_de_naissance = date_de_naissance;
@@ -26,7 +31,7 @@ public class student {
         this.level = level;
     }
 
-    public student() {
+    public Student() {
     }
 
     public int getNumEtudiant() {
@@ -69,11 +74,11 @@ public class student {
         this.adresse = adresse;
     }
 
-    public List<String> getContacts() {
+    public String getContacts() {
         return contacts;
     }
 
-    public void setContacts(List<String> contacts) {
+    public void setContacts(String contacts) {
         this.contacts = contacts;
     }
 

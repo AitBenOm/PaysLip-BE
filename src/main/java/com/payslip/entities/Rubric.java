@@ -1,12 +1,21 @@
 package com.payslip.entities;
 
+import javax.persistence.*;
+
+@Entity
 public class Rubric {
+    @Id
+    @GeneratedValue
     private int idRubric;
     public String label;
     public  int rate ;
     public boolean Property;
     public float value ;
     public int base ;
+
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    public PaysLip paysLip ;
 
     public Rubric(String label, int rate, boolean property, float value, int base) {
         this.label = label;
