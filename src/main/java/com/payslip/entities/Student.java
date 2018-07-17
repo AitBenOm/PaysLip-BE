@@ -15,12 +15,12 @@ public class Student {
     @Temporal(TemporalType.DATE)
     public Date date_de_naissance;
     public String adresse;
-    public String contacts;
+    public String[] contacts;
     public String email;
     public String sex;
     public String level;
 
-    public Student(String nom, String prenom, Date date_de_naissance, String adresse, String contacts, String email, String sex, String level) {
+    public Student(String nom, String prenom, Date date_de_naissance, String adresse, String[] contacts, String email, String sex, String level) {
         this.nom = nom;
         this.prenom = prenom;
         this.date_de_naissance = date_de_naissance;
@@ -74,11 +74,11 @@ public class Student {
         this.adresse = adresse;
     }
 
-    public String getContacts() {
+    public String[] getContacts() {
         return contacts;
     }
 
-    public void setContacts(String contacts) {
+    public void setContacts(String[] contacts) {
         this.contacts = contacts;
     }
 
