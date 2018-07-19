@@ -11,7 +11,7 @@ import java.util.List;
 public class PaysLip {
     @Id
     @GeneratedValue
-    public int idPyasLip;
+    public int idPaysLip;
 
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -34,11 +34,11 @@ public class PaysLip {
     }
 
     public int getIdPyasLip() {
-        return idPyasLip;
+        return idPaysLip;
     }
 
-    public void setIdPyasLip(int idPyasLip) {
-        this.idPyasLip = idPyasLip;
+    public void setIdPyasLip(int idPaysLip) {
+        this.idPaysLip = idPaysLip;
     }
 
     public Employee getEmployee() {

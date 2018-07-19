@@ -22,11 +22,20 @@ public class EmployeeService {
     }
     @RequestMapping(value = "/List/{matricule}", method = RequestMethod.GET)
     public Employee getEmployee(@PathVariable int matricule){
-        return this.employeeRepo.findOne(matricule);
+        return this.employeeRepo.getOne(matricule);
+    }
+
+    @RequestMapping(value = "/List/{matricule}", method = RequestMethod.DELETE)
+    public void deleteEmployee(@PathVariable int matricule){
+         this.employeeRepo.deleteById(matricule);
     }
     @RequestMapping(value = "/Add", method = RequestMethod.POST)
     public Employee AddEmployee(@RequestBody Employee employee){
 
+        return this.employeeRepo.save(employee);
+    }
+    @RequestMapping(value = "/Update", method = RequestMethod.PUT)
+    public Employee updateEmployee(@RequestBody Employee employee){
         return this.employeeRepo.save(employee);
     }
 

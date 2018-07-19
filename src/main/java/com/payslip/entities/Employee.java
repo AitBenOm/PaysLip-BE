@@ -1,5 +1,7 @@
 package com.payslip.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -29,6 +31,7 @@ public class Employee {
     private int nbEnfant;
     private  float salaireDeBase;
 
+    @JsonIgnore
     @OneToMany(mappedBy="employee",cascade =CascadeType.ALL, fetch=FetchType.EAGER)
     private List<PaysLip> paysLip;
 
