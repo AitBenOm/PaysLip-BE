@@ -14,19 +14,21 @@ public class PaysLip {
     public int idPaysLip;
 
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     public Employee employee;
 
-    @Temporal(TemporalType.DATE)
-    public Date[] period;
+
+    public Date startPeriod;
+    public Date endPeriod;
 
     @JsonIgnore
     @OneToMany(mappedBy="paysLip",cascade =CascadeType.ALL, fetch=FetchType.EAGER)
     public List<Rubric> rubrics;
 
-    public PaysLip(Employee employee, Date[] period, List<Rubric> rubrics) {
+    public PaysLip(Employee employee, Date startPeriod, Date endPeriod,List<Rubric> rubrics) {
         this.employee = employee;
-        this.period = period;
+        this.startPeriod = startPeriod;
+        this.endPeriod = endPeriod;
         this.rubrics = rubrics;
     }
 
@@ -47,14 +49,6 @@ public class PaysLip {
 
     public void setEmployee(Employee employee) {
         this.employee = employee;
-    }
-
-    public Date[] getPeriod() {
-        return period;
-    }
-
-    public void setPeriod(Date[] period) {
-        this.period = period;
     }
 
     public List<Rubric> getRubrics() {

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping(value ="Rubrics")
+@RequestMapping(value ="Rubric")
 @CrossOrigin("*")
 public class RubricService {
 
@@ -20,4 +20,9 @@ public class RubricService {
         return this.rubricRepo.getRubricsByPaysLip(idPaysLip);
     }
 
+    @RequestMapping(value = "/Add", method = RequestMethod.POST)
+    public List<Rubric> AddRubrics(@RequestBody List<Rubric> rubrics){
+
+        return this.rubricRepo.saveAll(rubrics);
+    }
 }

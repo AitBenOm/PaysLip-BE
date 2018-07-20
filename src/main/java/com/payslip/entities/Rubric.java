@@ -8,16 +8,16 @@ public class Rubric {
     @GeneratedValue
     private int idRubric;
     public String label;
-    public  int rate ;
+    public  String rate ;
     public boolean Property;
-    public float value ;
-    public int base ;
+    public String value ;
+    public String base ;
 
 
     @ManyToOne(fetch = FetchType.EAGER)
     public PaysLip paysLip ;
 
-    public Rubric(String label, int rate, boolean property, float value, int base) {
+    public Rubric(String label, String rate, boolean property, String value, String base) {
         this.label = label;
         this.rate = rate;
         Property = property;
@@ -44,11 +44,11 @@ public class Rubric {
         this.label = label;
     }
 
-    public int getRate() {
+    public String getRate() {
         return rate;
     }
 
-    public void setRate(int rate) {
+    public void setRate(String rate) {
         this.rate = rate;
     }
 
@@ -60,19 +60,19 @@ public class Rubric {
         Property = property;
     }
 
-    public float getValue() {
+    public String getValue() {
         return value;
     }
 
-    public void setValue(float value) {
+    public void setValue(String value) {
         this.value = value;
     }
 
-    public int getBase() {
+    public String getBase() {
         return base;
     }
 
-    public void setBase(int base) {
+    public void setBase(String base) {
         this.base = base;
     }
 }
