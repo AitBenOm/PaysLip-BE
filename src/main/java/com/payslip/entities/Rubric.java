@@ -14,7 +14,7 @@ public class Rubric {
     public String base ;
 
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     public PaysLip paysLip ;
 
     public Rubric(String label, String rate, boolean property, String value, String base) {

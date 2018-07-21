@@ -21,10 +21,10 @@ public class PaysLipService {
         return this.paysLipRepo.getPaysLipByEmployee(matricule);
     }
 
-    @RequestMapping(value = "/List/{idPaysLip}", method = RequestMethod.GET)
-    public PaysLip getPaysLip(@PathVariable int idPaysLip){
-        return this.paysLipRepo.getOne(idPaysLip);
-    }
+//    @RequestMapping(value = "/List/{idPaysLip}", method = RequestMethod.GET)
+//    public PaysLip getPaysLip(@PathVariable int idPaysLip){
+//        return this.paysLipRepo.getOne(idPaysLip);
+//    }
 
     @RequestMapping(value = "/List/{idPaysLip}", method = RequestMethod.DELETE)
     public void deletePaysLip(@PathVariable int idPaysLip){
