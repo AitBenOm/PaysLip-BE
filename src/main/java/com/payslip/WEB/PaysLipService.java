@@ -35,4 +35,8 @@ public class PaysLipService {
 
         return this.paysLipRepo.save(paysLip);
     }
+    @RequestMapping(value = "/List", method = RequestMethod.GET)
+    public List<PaysLip> getPaysLipsByEmployee(@RequestParam int matricule){
+        return  this.paysLipRepo.getPaysLipByEmployee(matricule);
+    }
 }

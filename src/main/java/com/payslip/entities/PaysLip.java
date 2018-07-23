@@ -22,7 +22,7 @@ public class PaysLip {
     public Date endPeriod;
 
     @JsonIgnore
-    @OneToMany(mappedBy="paysLip",cascade =CascadeType.ALL, fetch=FetchType.EAGER)
+    @OneToMany(mappedBy="paysLip",cascade =CascadeType.ALL, fetch=FetchType.LAZY)
     public List<Rubric> rubrics;
 
     public PaysLip(Employee employee, Date startPeriod, Date endPeriod,List<Rubric> rubrics) {
