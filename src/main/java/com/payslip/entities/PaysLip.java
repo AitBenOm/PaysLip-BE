@@ -10,7 +10,8 @@ import java.util.List;
 @Entity
 public class PaysLip {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.AUTO)
+
     public int idPaysLip;
 
 
@@ -22,7 +23,7 @@ public class PaysLip {
     public Date endPeriod;
 
     @JsonIgnore
-    @OneToMany(mappedBy="paysLip",cascade =CascadeType.ALL, fetch=FetchType.LAZY)
+    @OneToMany(mappedBy="paysLip",cascade =CascadeType.ALL, fetch=FetchType.EAGER)
     public List<Rubric> rubrics;
 
     public PaysLip(Employee employee, Date startPeriod, Date endPeriod,List<Rubric> rubrics) {

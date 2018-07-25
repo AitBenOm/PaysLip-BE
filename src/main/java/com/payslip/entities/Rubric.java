@@ -5,7 +5,7 @@ import javax.persistence.*;
 @Entity
 public class Rubric {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int idRubric;
     public String label;
     public  String rate ;

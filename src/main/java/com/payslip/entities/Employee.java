@@ -12,7 +12,7 @@ import java.util.List;
 @Entity
 public class Employee {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int matricule;
     private String nom;
     private String prenom;
