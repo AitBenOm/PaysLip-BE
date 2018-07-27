@@ -17,6 +17,7 @@ public class RubricService {
 
     @RequestMapping(value = "/List/{idPaysLip}", method = RequestMethod.GET)
     public List<Rubric> getRubricsByPaysLip(@PathVariable int idPaysLip){
+        System.out.println(idPaysLip);
         return this.rubricRepo.getRubricsByPaysLip(idPaysLip);
     }
 

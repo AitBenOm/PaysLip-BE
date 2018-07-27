@@ -25,6 +25,7 @@ public class Rubric {
         this.base = base;
     }
 
+
     public Rubric() {
     }
 

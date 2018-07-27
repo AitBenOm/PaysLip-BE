@@ -15,9 +15,11 @@ public class PaysLipService {
 
     @Autowired
     private PaysLipRepo paysLipRepo;
+    private  RubricService rubricService;
 
     @RequestMapping(value = "/List/{matricule}", method = RequestMethod.GET)
     public List<PaysLip> getListPaysLipByEmployee(@PathVariable int matricule){
+        this.rubricService.getRubricsByPaysLip(1);
         return this.paysLipRepo.getPaysLipByEmployee(matricule);
     }
 
