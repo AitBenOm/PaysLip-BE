@@ -14,8 +14,8 @@ public class PaysLip {
 
     public int idPaysLip;
 
-    @JsonIgnore
-    @ManyToOne
+
+    @ManyToOne(fetch = FetchType.LAZY)
     public Employee employee;
 
 

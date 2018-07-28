@@ -19,7 +19,7 @@ public class PaysLipService {
 
     @RequestMapping(value = "/List/{matricule}", method = RequestMethod.GET)
     public List<PaysLip> getListPaysLipByEmployee(@PathVariable int matricule){
-        this.rubricService.getRubricsByPaysLip(1);
+
         return this.paysLipRepo.getPaysLipByEmployee(matricule);
     }
 
