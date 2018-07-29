@@ -5,24 +5,44 @@ import com.itextpdf.text.pdf.*;
 import com.payslip.entities.Employee;
 import com.payslip.entities.PaysLip;
 import com.payslip.entities.Rubric;
+import org.json.simple.JSONObject;
 
-import java.io.FileNotFoundException;
+import javax.validation.constraints.Null;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 public class PdfCreator {
 
-    public static final String RESULT = System.getProperty("user.dir") + "\\PaysLips\\test.pdf";
+    public static final String RESULT = System.getProperty("user.dir") + "\\PaysLips\\paysLip.pdf";
     public static final String IMAGE = System.getProperty("user.dir") + "\\PaysLips\\LogoGSCA.PNG";
 
-    public void createPdf(Employee emp, PaysLip paysLip, List<Rubric> ListRubric) throws IOException, DocumentException {
+    public void createPdf(Employee emp, List<Rubric> ListRubric) throws IOException, DocumentException {
+        JSONObject rubricsTitle = new JSONObject();
+
+        rubricsTitle.put("SDB", "Salaire de Base_nb");
+        rubricsTitle.put("ANT", "Ancienté_tx");
+        rubricsTitle.put("CNSS", "C.N.S.S_tx");
+        rubricsTitle.put("AMO", "A.M.O_tx");
+        rubricsTitle.put("IGR", "I.G.R_tx");
+        rubricsTitle.put("ARR", "Arrondie_nb");
+        rubricsTitle.put("INDTR", "Indem.Deplacement_nb");
+        rubricsTitle.put("PRITR", "  Prime de Transport_nb");
+        rubricsTitle.put("PRIPAN", "Prime de Panier_nb");
+        rubricsTitle.put("INDRE", "Indem . Rpresentation_nb");
+        rubricsTitle.put("TXPRO", "Taxe . Professionelle_tx");
+        rubricsTitle.put("totalGain", "Total Des Gains_nb");
+        rubricsTitle.put("totalRet", "Totle des Retenus_nb");
+        rubricsTitle.put("netApaye", "NET A Payé_nb");
+        rubricsTitle.put("netImpo", "NET Imposable_nb");
 
 
-        // step 1
+        System.out.println(rubricsTitle.get("SDB"));
+
         Document document = new Document(PageSize.A4);
         // step 2
         PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(RESULT));
@@ -30,10 +50,7 @@ public class PdfCreator {
         document.open();
         PdfContentByte canvas = writer.getDirectContentUnder();
         Image image = Image.getInstance(IMAGE);
-
         image.scaleAbsolute(PageSize.A5);
-
-
         image.setAbsolutePosition(90, 150);
 
         canvas.saveState();
@@ -215,17 +232,15 @@ public class PdfCreator {
         cell.setFixedHeight(20);
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         infoEmp3.addCell(cell);
-        cell = new PdfPCell(new Paragraph(16, "5 rue MAurice Couderchet 94200 ivry-sur-seine", f));
+        cell = new PdfPCell(new Paragraph(16, emp.getAdresse(), f));
         cell.setFixedHeight(20);
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         infoEmp3.addCell(cell);
         cell = new PdfPCell(new Paragraph(16, "Fonction", f));
         cell.setFixedHeight(20);
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-        cell.setFixedHeight(20);
-        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         infoEmp3.addCell(cell);
-        cell = new PdfPCell(new Paragraph(16, "Surveillant Générale", f));
+        cell = new PdfPCell(new Paragraph(16, emp.getFonction(), f));
         cell.setFixedHeight(20);
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         infoEmp3.addCell(cell);
@@ -262,11 +277,16 @@ public class PdfCreator {
         cell.setFixedHeight(20);
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         rubrics.addCell(cell);
-
+        DecimalFormat df = new DecimalFormat ( ) ;
+        df.setMaximumFractionDigits(2);
 
         for (Rubric rubric : ListRubric) {
-            if (!rubric.base.equals("999")) {
-                cell = new PdfPCell(new Paragraph(16, rubric.label, f));
+           // System.out.println(rubric.value);
+            System.out.println(rubric.value!=(null));
+            if (!rubric.base.equals("999") && rubric.value!=(null) && !rubric.value.equals("0")) {
+                //System.out.println(rubric.label);
+                //System.out.println(rubricsTitle.get(rubric.label).toString());
+                cell = new PdfPCell(new Paragraph(16, rubricsTitle.get(rubric.label.split("_")[0]).toString(), f));
                 cell.setFixedHeight(20);
                 cell.setHorizontalAlignment(Element.ALIGN_CENTER);
                 rubrics.addCell(cell);
@@ -274,12 +294,15 @@ public class PdfCreator {
                 cell.setFixedHeight(20);
                 cell.setHorizontalAlignment(Element.ALIGN_CENTER);
                 rubrics.addCell(cell);
-                cell = new PdfPCell(new Paragraph(16, rubric.rate, f));
+                cell = new PdfPCell(new Paragraph(16, rubric.rate+((rubricsTitle.get(rubric.label.split("_")[1]).equals("tx")) ? "%" : ""), f));
                 cell.setFixedHeight(20);
                 cell.setHorizontalAlignment(Element.ALIGN_CENTER);
                 rubrics.addCell(cell);
                 if (rubric.Property) {
-                    cell = new PdfPCell(new Paragraph(16, rubric.value, f));
+                    System.out.println(Double.parseDouble(rubric.value));
+                    System.out.println((df.format(Double.parseDouble(rubric.value))));
+                    System.out.println((String.valueOf(df.format(Double.parseDouble(rubric.value)))));
+                    cell = new PdfPCell(new Paragraph(16,     String.valueOf((df.format(Double.parseDouble(rubric.value)))), f));
                     cell.setFixedHeight(20);
                     cell.setHorizontalAlignment(Element.ALIGN_CENTER);
                     rubrics.addCell(cell);
@@ -292,7 +315,7 @@ public class PdfCreator {
                     cell.setFixedHeight(20);
                     cell.setHorizontalAlignment(Element.ALIGN_CENTER);
                     rubrics.addCell(cell);
-                    cell = new PdfPCell(new Paragraph(16, rubric.value, f));
+                    cell = new PdfPCell(new Paragraph(16,      String.valueOf((df.format(Double.parseDouble(rubric.value)))), f));
                     cell.setFixedHeight(20);
                     cell.setHorizontalAlignment(Element.ALIGN_CENTER);
                     rubrics.addCell(cell);
@@ -301,15 +324,17 @@ public class PdfCreator {
         }
         document.add(rubrics);
 
-        PdfPTable test = (new PdfPTable(1));
+
         PdfPTable totals = (new PdfPTable(2));
         totals.setSpacingBefore(10);
         totals.setWidthPercentage(105);
         totals.setWidths(new int[]{6, 4});
 
+
         for (Rubric rubric : ListRubric) {
+
             if (rubric.base.equals("999")) {
-                cell = new PdfPCell(new Paragraph(16, rubric.label, f));
+                cell = new PdfPCell(new Paragraph(16, rubricsTitle.get(rubric.label.split("_")[0]).toString(), f));
                 cell.setFixedHeight(20);
                 cell.setHorizontalAlignment(Element.ALIGN_CENTER);
                 totals.addCell(cell);
@@ -326,7 +351,7 @@ public class PdfCreator {
                 cell.setHorizontalAlignment(Element.ALIGN_CENTER);
                 Valeurs.addCell(cell);
 
-                cell = new PdfPCell(new Paragraph(16, rubric.value, f));
+                cell = new PdfPCell(new Paragraph(16,      String.valueOf((df.format(Double.parseDouble(rubric.value)))), f));
                 cell.setFixedHeight(20);
                 cell.setBorder(PdfPCell.NO_BORDER);
                 cell.setHorizontalAlignment(Element.ALIGN_CENTER);

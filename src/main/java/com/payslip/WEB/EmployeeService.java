@@ -20,9 +20,19 @@ public class EmployeeService {
     public List<Employee> getListEmployee(){
         return this.employeeRepo.findAll();
     }
+
     @RequestMapping(value = "/List/{matricule}", method = RequestMethod.GET)
     public Employee getEmployee(@PathVariable int matricule){
         return this.employeeRepo.getOne(matricule);
+    }
+
+    @RequestMapping(value = "/print/{idPaysLips}", method = RequestMethod.GET)
+    public Employee printEmployeePaysLip(@PathVariable int idPaysLips){
+        System.out.println(idPaysLips);
+
+        // this.pdfCreator.createPdf();
+        return this.employeeRepo.getEmployee(idPaysLips);
+
     }
 
     @RequestMapping(value = "/List/{matricule}", method = RequestMethod.DELETE)

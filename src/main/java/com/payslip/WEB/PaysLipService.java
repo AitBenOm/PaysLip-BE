@@ -1,11 +1,18 @@
 package com.payslip.WEB;
 
+import com.itextpdf.text.DocumentException;
+import com.payslip.DAO.EmployeeRepo;
 import com.payslip.DAO.PaysLipRepo;
+import com.payslip.DAO.RubricRepo;
+import com.payslip.Services.PdfCreator;
+import com.payslip.entities.Employee;
 import com.payslip.entities.PaysLip;
+import com.payslip.entities.Rubric;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.awt.*;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -15,12 +22,27 @@ public class PaysLipService {
 
     @Autowired
     private PaysLipRepo paysLipRepo;
-    private  RubricService rubricService;
+    @Autowired
+    private EmployeeRepo employeeRepo;
+    @Autowired
+    private RubricRepo rubricRepo;
+
+
+
 
     @RequestMapping(value = "/List/{matricule}", method = RequestMethod.GET)
     public List<PaysLip> getListPaysLipByEmployee(@PathVariable int matricule){
 
         return this.paysLipRepo.getPaysLipByEmployee(matricule);
+    }
+    @RequestMapping(value = "/print/{idPaysLips}", method = RequestMethod.GET)
+    public void printEmployeePaysLip(@PathVariable int idPaysLips) throws IOException, DocumentException {
+        System.out.println(idPaysLips);
+        System.out.println(this.rubricRepo.getRubricsByPaysLip(1));
+        PdfCreator pdfCreator = new PdfCreator();
+         pdfCreator.createPdf(this.employeeRepo.getEmployee(idPaysLips),this.rubricRepo.getRubricsByPaysLip(1));
+
+
     }
 
 //    @RequestMapping(value = "/List/{idPaysLip}", method = RequestMethod.GET)
