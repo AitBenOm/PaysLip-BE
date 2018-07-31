@@ -32,7 +32,7 @@ public class Employee {
     private  float salaireDeBase;
 
     @JsonIgnore
-    @OneToMany(mappedBy="employee",cascade =CascadeType.ALL, fetch=FetchType.LAZY)
+    @OneToMany(mappedBy="employee",cascade =CascadeType.ALL, fetch=FetchType.EAGER)
     private List<PaysLip> paysLip;
 
     public Employee(String nom, String prenom, Date date_de_naissance, Date date_emb, String fonction, String adresse, String telephone, String email, String numCNSS, String numCin, String sex, String situationFamiliale, int nbEnfant, float salaireDeBase) {

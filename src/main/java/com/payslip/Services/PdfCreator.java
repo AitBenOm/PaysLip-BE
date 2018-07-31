@@ -6,6 +6,7 @@ import com.payslip.entities.Employee;
 import com.payslip.entities.PaysLip;
 import com.payslip.entities.Rubric;
 import org.json.simple.JSONObject;
+import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.Null;
 import java.io.FileOutputStream;
@@ -16,35 +17,39 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+@Service
 public class PdfCreator {
 
-    public static final String RESULT = System.getProperty("user.dir") + "\\PaysLips\\paysLip.pdf";
+    public  String RESULT = System.getProperty("user.dir") + "\\PaysLips\\";
     public static final String IMAGE = System.getProperty("user.dir") + "\\PaysLips\\LogoGSCA.PNG";
 
-    public void createPdf(Employee emp, List<Rubric> ListRubric) throws IOException, DocumentException {
+    public void createPdf(Employee emp, List<Rubric> ListRubric,PaysLip paysLip) throws IOException, DocumentException {
         JSONObject rubricsTitle = new JSONObject();
 
-        rubricsTitle.put("SDB", "Salaire de Base_nb");
-        rubricsTitle.put("ANT", "Ancienté_tx");
-        rubricsTitle.put("CNSS", "C.N.S.S_tx");
-        rubricsTitle.put("AMO", "A.M.O_tx");
-        rubricsTitle.put("IGR", "I.G.R_tx");
-        rubricsTitle.put("ARR", "Arrondie_nb");
-        rubricsTitle.put("INDTR", "Indem.Deplacement_nb");
-        rubricsTitle.put("PRITR", "  Prime de Transport_nb");
-        rubricsTitle.put("PRIPAN", "Prime de Panier_nb");
-        rubricsTitle.put("INDRE", "Indem . Rpresentation_nb");
-        rubricsTitle.put("TXPRO", "Taxe . Professionelle_tx");
-        rubricsTitle.put("totalGain", "Total Des Gains_nb");
-        rubricsTitle.put("totalRet", "Totle des Retenus_nb");
-        rubricsTitle.put("netApaye", "NET A Payé_nb");
-        rubricsTitle.put("netImpo", "NET Imposable_nb");
+        rubricsTitle.put("SDB", "Salaire de Base");
+        rubricsTitle.put("ANT", "Ancienté");
+        rubricsTitle.put("CNSS", "C.N.S.S");
+        rubricsTitle.put("AMO", "A.M.O");
+        rubricsTitle.put("IGR", "I.G.R");
+        rubricsTitle.put("ARR", "Arrondie");
+        rubricsTitle.put("PRCHG", "Pérsonnes à Charge");
+        rubricsTitle.put("INDTR", "Indem.Deplacement");
+        rubricsTitle.put("PRITR", "  Prime de Transport");
+        rubricsTitle.put("PRIPAN", "Prime de Panier");
+        rubricsTitle.put("INDRE", "Indem . Rpresentation");
+        rubricsTitle.put("TXPRO", "Taxe . Professionelle");
+        rubricsTitle.put("totalGain", "Total Des Gains");
+        rubricsTitle.put("totalRet", "Totle des Retenus");
+        rubricsTitle.put("netApaye", "NET A Payé");
+        rubricsTitle.put("netImpo", "NET Imposable");
 
 
-        System.out.println(rubricsTitle.get("SDB"));
+        //  System.out.println(rubricsTitle.get("SDB"));
 
         Document document = new Document(PageSize.A4);
         // step 2
+        RESULT=RESULT+(emp.getNom()+"-"+emp.getPrenom()+"-"+paysLip.getEndPeriod()+".pdf").replace(" ","-");
+       System.out.println("PdfCreator Service "+RESULT);
         PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(RESULT));
         // step 3
         document.open();
@@ -89,7 +94,9 @@ public class PdfCreator {
         cell.setBorder(Rectangle.NO_BORDER);
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         header.addCell(cell);
+        header.setSpacingAfter(30);
         document.add(header);
+
 
         PdfPTable paysLipsHead = new PdfPTable(3);
         paysLipsHead.setWidthPercentage(105);
@@ -159,7 +166,7 @@ public class PdfCreator {
         cell.setColspan(3);
         infoEmp2.addCell(cell);
 
-        cell = new PdfPCell(new Paragraph(16, emp.getNom()+" "+emp.getPrenom(), f));
+        cell = new PdfPCell(new Paragraph(16, emp.getNom() + " " + emp.getPrenom(), f));
         cell.setFixedHeight(20);
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         cell.setColspan(3);
@@ -186,7 +193,7 @@ public class PdfCreator {
         cell.setFixedHeight(20);
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         infoEmp2.addCell(cell);
-        cell = new PdfPCell(new Paragraph(16, emp.getSituationFamiliale()+"-"+emp.getNbEnfant()+"-"+emp.getSex(), f));
+        cell = new PdfPCell(new Paragraph(16, emp.getSituationFamiliale() + "-" + emp.getNbEnfant() + "-" + emp.getSex(), f));
         cell.setFixedHeight(20);
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         infoEmp2.addCell(cell);
@@ -224,7 +231,7 @@ public class PdfCreator {
         cell.setFixedHeight(20);
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         infoEmp3.addCell(cell);
-        cell = new PdfPCell(new Paragraph(16, "01/07/2018 AU 31/07/2018", f));
+        cell = new PdfPCell(new Paragraph(16, paysLip.getStartPeriod().toString()+" AU "+paysLip.getEndPeriod().toString(), f));
         cell.setFixedHeight(20);
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         infoEmp3.addCell(cell);
@@ -250,6 +257,7 @@ public class PdfCreator {
         cell.setColspan(2);*/
 
         paysLipsHead.addCell(cell);
+        paysLipsHead.setSpacingAfter(10);
         document.add(paysLipsHead);
 
         PdfPTable rubrics = new PdfPTable(5);
@@ -277,32 +285,32 @@ public class PdfCreator {
         cell.setFixedHeight(20);
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         rubrics.addCell(cell);
-        DecimalFormat df = new DecimalFormat ( ) ;
-        df.setMaximumFractionDigits(2);
+        DecimalFormat df = new DecimalFormat();
+        df.setMaximumFractionDigits(1);
 
         for (Rubric rubric : ListRubric) {
-           // System.out.println(rubric.value);
-            System.out.println(rubric.value!=(null));
-            if (!rubric.base.equals("999") && rubric.value!=(null) && !rubric.value.equals("0")) {
+            // System.out.println(rubric.value);
+            //    System.out.println(rubric.value!=(null));
+            if (!rubric.base.equals("999") && rubric.value != (null) && !rubric.value.equals("0")) {
                 //System.out.println(rubric.label);
-                //System.out.println(rubricsTitle.get(rubric.label).toString());
-                cell = new PdfPCell(new Paragraph(16, rubricsTitle.get(rubric.label.split("_")[0]).toString(), f));
+              //  System.out.println(rubricsTitle.get(rubric.label).toString());
+                cell = new PdfPCell(new Paragraph(16, rubricsTitle.get(rubric.label).toString(), f));
                 cell.setFixedHeight(20);
                 cell.setHorizontalAlignment(Element.ALIGN_CENTER);
                 rubrics.addCell(cell);
-                cell = new PdfPCell(new Paragraph(16, rubric.base, f));
+                cell = new PdfPCell(new Paragraph(16, String.valueOf((df.format(Double.parseDouble(rubric.base)))), f));
                 cell.setFixedHeight(20);
                 cell.setHorizontalAlignment(Element.ALIGN_CENTER);
                 rubrics.addCell(cell);
-                cell = new PdfPCell(new Paragraph(16, rubric.rate+((rubricsTitle.get(rubric.label.split("_")[1]).equals("tx")) ? "%" : ""), f));
+                cell = new PdfPCell(new Paragraph(16, rubric.rate + (rubric.rateType.equals("tx") ? " %" : ""), f));
                 cell.setFixedHeight(20);
                 cell.setHorizontalAlignment(Element.ALIGN_CENTER);
                 rubrics.addCell(cell);
                 if (rubric.Property) {
-                    System.out.println(Double.parseDouble(rubric.value));
+                  /*  System.out.println(Double.parseDouble(rubric.value));
                     System.out.println((df.format(Double.parseDouble(rubric.value))));
-                    System.out.println((String.valueOf(df.format(Double.parseDouble(rubric.value)))));
-                    cell = new PdfPCell(new Paragraph(16,     String.valueOf((df.format(Double.parseDouble(rubric.value)))), f));
+                    System.out.println((String.valueOf(df.format(Double.parseDouble(rubric.value)))));*/
+                    cell = new PdfPCell(new Paragraph(16, String.valueOf((df.format(Double.parseDouble(rubric.value)))), f));
                     cell.setFixedHeight(20);
                     cell.setHorizontalAlignment(Element.ALIGN_CENTER);
                     rubrics.addCell(cell);
@@ -315,58 +323,122 @@ public class PdfCreator {
                     cell.setFixedHeight(20);
                     cell.setHorizontalAlignment(Element.ALIGN_CENTER);
                     rubrics.addCell(cell);
-                    cell = new PdfPCell(new Paragraph(16,      String.valueOf((df.format(Double.parseDouble(rubric.value)))), f));
+                    cell = new PdfPCell(new Paragraph(16, String.valueOf((df.format(Double.parseDouble(rubric.value)))), f));
                     cell.setFixedHeight(20);
                     cell.setHorizontalAlignment(Element.ALIGN_CENTER);
                     rubrics.addCell(cell);
                 }
             }
         }
+        rubrics.setSpacingAfter(10);
         document.add(rubrics);
 
 
-        PdfPTable totals = (new PdfPTable(2));
-        totals.setSpacingBefore(10);
-        totals.setWidthPercentage(105);
-        totals.setWidths(new int[]{6, 4});
+        PdfPTable footer = (new PdfPTable(2));
+        footer.setSpacingBefore(10);
+        footer.setWidthPercentage(105);
+        footer.setWidths(new int[]{6, 4});
 
 
-        for (Rubric rubric : ListRubric) {
+        int n = ListRubric.size();
 
-            if (rubric.base.equals("999")) {
-                cell = new PdfPCell(new Paragraph(16, rubricsTitle.get(rubric.label.split("_")[0]).toString(), f));
-                cell.setFixedHeight(20);
-                cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-                totals.addCell(cell);
-                PdfPTable Valeurs = (new PdfPTable(4));
-                cell = new PdfPCell(new Paragraph(16, "", f));
-                cell.setFixedHeight(20);
-                cell.setBorder(PdfPCell.NO_BORDER);
-                cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-                Valeurs.addCell(cell);
+        cell = new PdfPCell(new Paragraph(16, "NET Imposable", f));
+        cell.setFixedHeight(20);
+        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        footer.addCell(cell);
+        PdfPTable NetImpo = (new PdfPTable(4));
+        cell = new PdfPCell(new Paragraph(16, "", f));
+        cell.setFixedHeight(20);
+        cell.setBorder(PdfPCell.NO_BORDER);
+        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        NetImpo.addCell(cell);
 
-                cell = new PdfPCell(new Paragraph(16, "", f));
-                cell.setFixedHeight(20);
-                cell.setBorder(PdfPCell.NO_BORDER);
-                cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-                Valeurs.addCell(cell);
-
-                cell = new PdfPCell(new Paragraph(16,      String.valueOf((df.format(Double.parseDouble(rubric.value)))), f));
-                cell.setFixedHeight(20);
-                cell.setBorder(PdfPCell.NO_BORDER);
-                cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-                Valeurs.addCell(cell);
-                cell = new PdfPCell(new Paragraph(16, "Total", f));
-                cell.setFixedHeight(20);
-                cell.setBorder(PdfPCell.NO_BORDER);
-                cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-                Valeurs.addCell(cell);
-                totals.addCell(Valeurs);
-            }
-        }
+        cell = new PdfPCell(new Paragraph(16, "", f));
+        cell.setFixedHeight(20);
+        cell.setBorder(PdfPCell.NO_BORDER);
+        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        NetImpo.addCell(cell);
 
 
-        document.add(totals);
+        cell = new PdfPCell(new Paragraph(16, String.valueOf((df.format(Double.parseDouble(ListRubric.get(n - 1).value)))), f));
+        cell.setFixedHeight(20);
+        cell.setBorder(PdfPCell.NO_BORDER);
+        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        NetImpo.addCell(cell);
+        cell = new PdfPCell(new Paragraph(16, "", f));
+        cell.setFixedHeight(20);
+        cell.setBorder(PdfPCell.NO_BORDER);
+        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        NetImpo.addCell(cell);
+        footer.addCell(NetImpo);
+
+
+
+        cell = new PdfPCell(new Paragraph(16, "Total", f));
+        cell.setFixedHeight(20);
+        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        footer.addCell(cell);
+        PdfPTable Total = (new PdfPTable(4));
+        cell = new PdfPCell(new Paragraph(16, "", f));
+        cell.setFixedHeight(20);
+        cell.setBorder(PdfPCell.NO_BORDER);
+        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        Total.addCell(cell);
+
+        cell = new PdfPCell(new Paragraph(16, "", f));
+        cell.setFixedHeight(20);
+        cell.setBorder(PdfPCell.NO_BORDER);
+        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        Total.addCell(cell);
+
+
+        cell = new PdfPCell(new Paragraph(16, String.valueOf((df.format(Double.parseDouble(ListRubric.get(n - 4).value)))), f));
+        cell.setFixedHeight(20);
+        cell.setBorder(PdfPCell.NO_BORDER);
+        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        Total.addCell(cell);
+        cell = new PdfPCell(new Paragraph(16, String.valueOf((df.format(Double.parseDouble(ListRubric.get(n - 3).value)))), f));
+        cell.setFixedHeight(20);
+        cell.setBorder(PdfPCell.NO_BORDER);
+        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        Total.addCell(cell);
+
+
+        footer.addCell(Total);
+
+        cell = new PdfPCell(new Paragraph(16, "NET A Payé", f));
+        cell.setFixedHeight(20);
+        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        footer.addCell(cell);
+        PdfPTable NetPaye = (new PdfPTable(4));
+        cell = new PdfPCell(new Paragraph(16, "", f));
+        cell.setFixedHeight(20);
+        cell.setBorder(PdfPCell.NO_BORDER);
+        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        NetPaye.addCell(cell);
+
+        cell = new PdfPCell(new Paragraph(16, "", f));
+        cell.setFixedHeight(20);
+        cell.setBorder(PdfPCell.NO_BORDER);
+        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        NetPaye.addCell(cell);
+
+
+        cell = new PdfPCell(new Paragraph(16, String.valueOf((df.format(Double.parseDouble(ListRubric.get(n - 2).value)))), f));
+        cell.setFixedHeight(20);
+        cell.setBorder(PdfPCell.NO_BORDER);
+        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        NetPaye.addCell(cell);
+        cell = new PdfPCell(new Paragraph(16, "", f));
+        cell.setFixedHeight(20);
+        cell.setBorder(PdfPCell.NO_BORDER);
+        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        NetPaye.addCell(cell);
+
+
+        footer.addCell(NetPaye);
+
+        document.add(footer);
 
         document.close();
     }

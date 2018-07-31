@@ -12,6 +12,9 @@ public interface PaysLipRepo extends JpaRepository<PaysLip, Integer>{
 
         @Query("select p from PaysLip p where p.employee.matricule =:x")
         List<PaysLip> getPaysLipByEmployee(@Param("x") int matricule);
+
+        @Query("select p from PaysLip p where p.idPaysLip =:x")
+        PaysLip getPaysLipById(@Param("x") int idPaysLip);
     }
 
 

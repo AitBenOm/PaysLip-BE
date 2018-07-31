@@ -4,15 +4,26 @@ import com.itextpdf.text.DocumentException;
 import com.payslip.DAO.EmployeeRepo;
 import com.payslip.DAO.PaysLipRepo;
 import com.payslip.DAO.RubricRepo;
+import com.payslip.Services.FileStorageService;
 import com.payslip.Services.PdfCreator;
 import com.payslip.entities.Employee;
 import com.payslip.entities.PaysLip;
 import com.payslip.entities.Rubric;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.awt.*;
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -26,6 +37,10 @@ public class PaysLipService {
     private EmployeeRepo employeeRepo;
     @Autowired
     private RubricRepo rubricRepo;
+    @Autowired
+    private FileStorageService fileStorageService;
+    @Autowired
+    private PdfCreator pdfCreator;
 
 
 
@@ -35,20 +50,60 @@ public class PaysLipService {
 
         return this.paysLipRepo.getPaysLipByEmployee(matricule);
     }
-    @RequestMapping(value = "/print/{idPaysLips}", method = RequestMethod.GET)
-    public void printEmployeePaysLip(@PathVariable int idPaysLips) throws IOException, DocumentException {
-        System.out.println(idPaysLips);
-        System.out.println(this.rubricRepo.getRubricsByPaysLip(1));
-        PdfCreator pdfCreator = new PdfCreator();
-         pdfCreator.createPdf(this.employeeRepo.getEmployee(idPaysLips),this.rubricRepo.getRubricsByPaysLip(1));
 
 
+    @RequestMapping(value = "/List/PaysLip/{idPaysLip}", method = RequestMethod.GET)
+    public PaysLip getPaysLip(@PathVariable int idPaysLip){
+
+        return this.paysLipRepo.getPaysLipById(idPaysLip);
     }
 
-//    @RequestMapping(value = "/List/{idPaysLip}", method = RequestMethod.GET)
-//    public PaysLip getPaysLip(@PathVariable int idPaysLip){
-//        return this.paysLipRepo.getOne(idPaysLip);
-//    }
+
+    @GetMapping("/print")
+    public ResponseEntity<Resource> downloadPaysLip(@RequestParam int idPaysLip, @RequestParam int matricule, HttpServletRequest request) throws IOException, DocumentException {
+
+        List<Rubric> rubrics =this.rubricRepo.getRubricsByPaysLip(idPaysLip);
+        PaysLip paysLip =this.getPaysLip(idPaysLip);
+        Employee employee = this.employeeRepo.getEmployee(matricule);
+        String paysLipName=(employee.getNom()+"-"+employee.getPrenom()+"-"+paysLip.getEndPeriod()+".pdf").replace(" ","-");
+        //System.out.println(rubrics.size());
+        if(!rubrics.get(0).label.equals("SDB")){
+            Collections.reverse(rubrics);
+        }
+        pdfCreator.createPdf(employee,rubrics,paysLip);
+
+        // Load file as Resource
+        Path path= Paths.get( System.getProperty("user.dir")+"\\PaysLips");
+        Resource resource = fileStorageService.loadFileAsResource(paysLipName,path );
+
+        // Try to determine file's content type
+        String contentType = null;
+        try {
+            contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
+        } catch (IOException ex) {
+            System.out.println("Could not determine file type.");
+        }
+
+        // Fallback to the default content type if type could not be determined
+        if(contentType == null) {
+            contentType = "application/octet-stream";
+            //contentType = "application/pdf";
+        }
+       System.out.println("Path PaysLipService "+path.toString());
+        File file = new File(path.toString()+"\\"+paysLipName);
+
+       // System.out.println("File "+file.getName());
+      /*  if(file.delete()){
+            System.out.println(file.getName() + " is deleted!");
+        }else{
+            System.out.println("Delete operation is failed.");
+        }*/
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                .body(resource);
+    }
+
 
     @RequestMapping(value = "/List/{idPaysLip}", method = RequestMethod.DELETE)
     public void deletePaysLip(@PathVariable int idPaysLip){
@@ -63,4 +118,5 @@ public class PaysLipService {
     public List<PaysLip> getPaysLipsByEmployee(@RequestParam int matricule){
         return  this.paysLipRepo.getPaysLipByEmployee(matricule);
     }
+
 }

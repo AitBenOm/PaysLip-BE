@@ -11,19 +11,37 @@ import java.util.List;
 public class PaysLip {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-
-    public int idPaysLip;
-
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    public Employee employee;
+    private int idPaysLip;
 
 
-    public Date startPeriod;
-    public Date endPeriod;
+    @Temporal(TemporalType.DATE)
+    private Date startPeriod;
+
+    public Date getStartPeriod() {
+        return startPeriod;
+    }
+
+    public void setStartPeriod(Date startPeriod) {
+        this.startPeriod = startPeriod;
+    }
+
+    public Date getEndPeriod() {
+        return endPeriod;
+    }
+
+    public void setEndPeriod(Date endPeriod) {
+        this.endPeriod = endPeriod;
+    }
+
+    @Temporal(TemporalType.DATE)
+    private Date endPeriod;
+
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Employee employee;
 
     @JsonIgnore
-    @OneToMany(mappedBy="paysLip",cascade =CascadeType.ALL, fetch=FetchType.LAZY)
+    @OneToMany(mappedBy="paysLip",cascade =CascadeType.ALL, fetch=FetchType.EAGER)
     public List<Rubric> rubrics;
 
     public PaysLip(Employee employee, Date startPeriod, Date endPeriod,List<Rubric> rubrics) {

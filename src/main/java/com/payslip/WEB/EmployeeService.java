@@ -26,14 +26,9 @@ public class EmployeeService {
         return this.employeeRepo.getOne(matricule);
     }
 
-    @RequestMapping(value = "/print/{idPaysLips}", method = RequestMethod.GET)
-    public Employee printEmployeePaysLip(@PathVariable int idPaysLips){
-        System.out.println(idPaysLips);
 
-        // this.pdfCreator.createPdf();
-        return this.employeeRepo.getEmployee(idPaysLips);
 
-    }
+
 
     @RequestMapping(value = "/List/{matricule}", method = RequestMethod.DELETE)
     public void deleteEmployee(@PathVariable int matricule){

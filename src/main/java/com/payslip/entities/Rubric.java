@@ -9,6 +9,7 @@ public class Rubric {
     private int idRubric;
     public String label;
     public  String rate ;
+    public  String rateType ;
     public boolean Property;
     public String value ;
     public String base ;
@@ -17,63 +18,19 @@ public class Rubric {
     @ManyToOne(fetch = FetchType.LAZY)
     public PaysLip paysLip ;
 
-    public Rubric(String label, String rate, boolean property, String value, String base) {
-        this.label = label;
-        this.rate = rate;
-        Property = property;
-        this.value = value;
-        this.base = base;
-    }
 
 
     public Rubric() {
     }
 
-    public int getIdRubric() {
-        return idRubric;
-    }
-
-    public void setIdRubric(int idRubric) {
-        this.idRubric = idRubric;
-    }
-
-    public String getLabel() {
-        return label;
-    }
-
-    public void setLabel(String label) {
+    public Rubric(String label, String rate, String rateType, boolean property, String value, String base, PaysLip paysLip) {
         this.label = label;
-    }
-
-    public String getRate() {
-        return rate;
-    }
-
-    public void setRate(String rate) {
         this.rate = rate;
-    }
-
-    public boolean isProperty() {
-        return Property;
-    }
-
-    public void setProperty(boolean property) {
+        this.rateType = rateType;
         Property = property;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
         this.value = value;
-    }
-
-    public String getBase() {
-        return base;
-    }
-
-    public void setBase(String base) {
         this.base = base;
+        this.paysLip = paysLip;
     }
+
 }
