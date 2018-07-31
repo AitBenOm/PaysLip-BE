@@ -20,10 +20,11 @@ import java.util.List;
 @Service
 public class PdfCreator {
 
-    public  String RESULT = System.getProperty("user.dir") + "\\PaysLips\\";
+
     public static final String IMAGE = System.getProperty("user.dir") + "\\PaysLips\\LogoGSCA.PNG";
 
     public void createPdf(Employee emp, List<Rubric> ListRubric,PaysLip paysLip) throws IOException, DocumentException {
+          String RESULT = System.getProperty("user.dir") + "\\PaysLips\\"+(emp.getNom()+"-"+emp.getPrenom()+"-"+paysLip.getEndPeriod()+".pdf").replace(" ","-");
         JSONObject rubricsTitle = new JSONObject();
 
         rubricsTitle.put("SDB", "Salaire de Base");
@@ -48,7 +49,7 @@ public class PdfCreator {
 
         Document document = new Document(PageSize.A4);
         // step 2
-        RESULT=RESULT+(emp.getNom()+"-"+emp.getPrenom()+"-"+paysLip.getEndPeriod()+".pdf").replace(" ","-");
+
        System.out.println("PdfCreator Service "+RESULT);
         PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(RESULT));
         // step 3

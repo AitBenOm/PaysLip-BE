@@ -14,12 +14,14 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.awt.*;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.net.URLConnection;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
@@ -60,48 +62,58 @@ public class PaysLipService {
 
 
     @GetMapping("/print")
-    public ResponseEntity<Resource> downloadPaysLip(@RequestParam int idPaysLip, @RequestParam int matricule, HttpServletRequest request) throws IOException, DocumentException {
+    public HttpServletResponse downloadPaysLip(@RequestParam int idPaysLip, @RequestParam int matricule,  HttpServletResponse response) throws IOException, DocumentException {
 
-        List<Rubric> rubrics =this.rubricRepo.getRubricsByPaysLip(idPaysLip);
-        PaysLip paysLip =this.getPaysLip(idPaysLip);
+        List<Rubric> rubrics = this.rubricRepo.getRubricsByPaysLip(idPaysLip);
+        PaysLip paysLip = this.getPaysLip(idPaysLip);
         Employee employee = this.employeeRepo.getEmployee(matricule);
-        String paysLipName=(employee.getNom()+"-"+employee.getPrenom()+"-"+paysLip.getEndPeriod()+".pdf").replace(" ","-");
+        String paysLipName = (employee.getNom() + "-" + employee.getPrenom() + "-" + paysLip.getEndPeriod() + ".pdf").replace(" ", "-");
         //System.out.println(rubrics.size());
-        if(!rubrics.get(0).label.equals("SDB")){
+        if (!rubrics.get(0).label.equals("SDB")) {
             Collections.reverse(rubrics);
         }
-        pdfCreator.createPdf(employee,rubrics,paysLip);
+        pdfCreator.createPdf(employee, rubrics, paysLip);
 
         // Load file as Resource
-        Path path= Paths.get( System.getProperty("user.dir")+"\\PaysLips");
-        Resource resource = fileStorageService.loadFileAsResource(paysLipName,path );
+        Path path = Paths.get(System.getProperty("user.dir") + "\\PaysLips");
+        Resource resource = fileStorageService.loadFileAsResource(paysLipName, path);
 
         // Try to determine file's content type
         String contentType = null;
-        try {
-            contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
-        } catch (IOException ex) {
-            System.out.println("Could not determine file type.");
-        }
+
+        File file = new File(path.toString() + "\\" + paysLipName);
+
+        contentType = URLConnection.guessContentTypeFromName(file.getName());
+        /*contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());*/
+
+        System.out.println(contentType);
+
 
         // Fallback to the default content type if type could not be determined
-        if(contentType == null) {
-            contentType = "application/octet-stream";
-            //contentType = "application/pdf";
-        }
-       System.out.println("Path PaysLipService "+path.toString());
-        File file = new File(path.toString()+"\\"+paysLipName);
 
-       // System.out.println("File "+file.getName());
+            // contentType = "application/octet-stream";
+            contentType = "application/pdf";
+
+        response.setContentType(contentType);
+        response.setHeader("Content-Disposition", String.format("attachment; filename=\"" + resource.getFilename() + "\""));
+        response.setHeader("Employee",paysLipName);
+        response.setContentLength((int) file.length());
+
+        InputStream inputStream = new BufferedInputStream(new FileInputStream(file));
+
+        FileCopyUtils.copy(inputStream, response.getOutputStream());
+
+
+        System.out.println("Path PaysLipService " + path.toString());
+        // File file = new File(path.toString()+"\\"+paysLipName);
+
+        // System.out.println("File "+file.getName());
       /*  if(file.delete()){
             System.out.println(file.getName() + " is deleted!");
         }else{
             System.out.println("Delete operation is failed.");
         }*/
-        return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(contentType))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
-                .body(resource);
+        return response;
     }
 
 
@@ -118,5 +130,19 @@ public class PaysLipService {
     public List<PaysLip> getPaysLipsByEmployee(@RequestParam int matricule){
         return  this.paysLipRepo.getPaysLipByEmployee(matricule);
     }
+
+    @RequestMapping(value = "/delete", method = RequestMethod.GET)
+    public void deleteFile(@RequestParam String fileName){
+        Path path= Paths.get( System.getProperty("user.dir")+"\\PaysLips");
+        File file = new File(path.toString()+"\\"+fileName);
+
+        // System.out.println("File "+file.getName());
+        if(file.delete()){
+            System.out.println(file.getName() + " is deleted!");
+        }else{
+            System.out.println("Delete operation is failed.");
+        }
+    }
+
 
 }
